@@ -739,3 +739,12 @@
 .option-inpt {
   text-align: center;
 }
+
+.search-word-highlighted {
+  color: #272625;
+  background: #b6d932;
+}
+
+.inspector-source-tree-search-input {
+  max-width: 200px;
+}

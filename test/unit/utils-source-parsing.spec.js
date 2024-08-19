@@ -5,6 +5,7 @@ import {
   findDOMNodeByPath,
   findJSONElementByPath,
   xmlToJSON,
+  findNodeMatchingSearchTerm,
 } from '../../app/common/renderer/utils/source-parsing';
 
 describe('utils/source-parsing.js', function () {
@@ -512,6 +513,57 @@ describe('utils/source-parsing.js', function () {
         tagName: 'hierarchy',
         path: '',
       });
+    });
+  });
+
+  describe('#findNodeMatchingSearchTerm', function () {
+    it('should return the null when search value is empty', function () {
+      const matcher = findNodeMatchingSearchTerm('android.widget.FrameLayout', '');
+      expect(matcher).toEqual(null);
+    });
+
+    it('should return null when search value is undefined', function () {
+      const matcher = findNodeMatchingSearchTerm('android.widget.FrameLayout');
+      expect(matcher).toEqual(null);
+    });
+
+    it('should return null when the value is undefined', function () {
+      const matcher = findNodeMatchingSearchTerm(undefined, 'widget');
+      expect(matcher).toEqual(null);
+    });
+
+    it('should return null when the value is empty', function () {
+      const matcher = findNodeMatchingSearchTerm('', 'widget');
+      expect(matcher).toEqual(null);
+    });
+
+    it('should return null when search value is not matched', function () {
+      const matcher = findNodeMatchingSearchTerm('android.widget.FrameLayout', 'login');
+      expect(matcher).toEqual(null);
+    });
+
+    it('should return valid prefix, suffix and matched if a part of text matches the search value in lowercase', function () {
+      const matcher = findNodeMatchingSearchTerm('android.Widget.FrameLayout', 'widget');
+      expect(matcher.prefix).toEqual('android.');
+      expect(matcher.matchedWord).toEqual('Widget');
+      expect(matcher.suffix).toEqual('.FrameLayout');
+    });
+
+    it('should return valid prefix, suffix and matched if a part of text matches the search value in uppercase', function () {
+      const matcher = findNodeMatchingSearchTerm('android.Widget.FrameLayout', 'WIDGET');
+      expect(matcher.prefix).toEqual('android.');
+      expect(matcher.matchedWord).toEqual('Widget');
+      expect(matcher.suffix).toEqual('.FrameLayout');
+    });
+
+    it('should return valid prefix, suffix and matched if a part of text matches the search value exact matches', function () {
+      const matcher = findNodeMatchingSearchTerm(
+        'android.Widget.FrameLayout',
+        'android.Widget.FrameLayout',
+      );
+      expect(matcher.prefix).toEqual('');
+      expect(matcher.matchedWord).toEqual('android.Widget.FrameLayout');
+      expect(matcher.suffix).toEqual('');
     });
   });
 });
